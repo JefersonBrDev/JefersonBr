@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JefersonBr.com</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+}
+
+/* HEADER */
+header {
+  background: #020617;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+header button {
+  font-size: 14px;
+  padding: 6px 10px;
+}
+
+/* GRID */
+main {
+  padding: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.card:hover {
+  background: #334155;
+}
+
+/* PLAYER */
+#player {
+  position: fixed;
+  inset: 0;
+  background: #020617;
+  display: none;
+  flex-direction: column;
+}
+
+#playerTop {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+#playerTop button {
+  font-size: 14px;
+  padding: 6px 10px;
+}
+
+#gameArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* GAME */
+#gameBox {
+  background: #020617;
+  border-radius: 12px;
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+select, button {
+  font-size: 16px;
+  padding: 8px;
+  margin: 5px;
+}
+
+#question {
+  font-size: 22px;
+  margin: 15px 0;
+}
+
+input {
+  font-size: 18px;
+  padding: 6px;
+  width: 100px;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>JefersonBr.com</h1>
+  <button onclick="fullscreenSite()">Tela cheia site</button>
+</header>
+
+<main>
+  <div class="card" onclick="openGame()">
+    🧮<br>
+    Matemática<br>
+    (Contas)
+  </div>
+</main>
+
+<!-- PLAYER -->
+<div id="player">
+  <div id="playerTop">
+    <button onclick="closeGame()">Voltar</button>
+    <button onclick="fullscreenGame()">Tela cheia jogo</button>
+  </div>
+
+  <div id="gameArea">
+    <div id="gameBox">
+      <h2>Jogo de Matemática</h2>
+
+      <select id="difficulty">
+        <option value="easy">Fácil</option>
+        <option value="medium">Médio</option>
+        <option value="hard">Difícil</option>
+        <option value="extreme">Extremo</option>
+      </select>
+
+      <div id="question">Clique em começar</div>
+
+      <input type="number" id="answer">
+      <br>
+      <button onclick="checkAnswer()">Responder</button>
+      <button onclick="newQuestion()">Nova conta</button>
+
+      <p id="result"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+const player = document.getElementById("player");
+const questionEl = document.getElementById("question");
+const resultEl = document.getElementById("result");
+const answerEl = document.getElementById("answer");
+const diffEl = document.getElementById("difficulty");
+const gameBox = document.getElementById("gameBox");
+
+let correctAnswer = 0;
+
+function openGame() {
+  player.style.display = "flex";
+  newQuestion();
+}
+
+function closeGame() {
+  player.style.display = "none";
+}
+
+function fullscreenSite() {
+  document.documentElement.requestFullscreen();
+}
+
+function fullscreenGame() {
+  gameBox.requestFullscreen();
+}
+
+function newQuestion() {
+  const diff = diffEl.value;
+  let a, b, op;
+
+  if (diff === "easy") {
+    a = rand(1,10);
+    b = rand(1,10);
+    op = "+";
+    correctAnswer = a + b;
+  }
+  if (diff === "medium") {
+    a = rand(10,50);
+    b = rand(1,20);
+    op = "-";
+    correctAnswer = a - b;
+  }
+  if (diff === "hard") {
+    a = rand(5,20);
+    b = rand(2,10);
+    op = "×";
+    correctAnswer = a * b;
+  }
+  if (diff === "extreme") {
+    a = rand(20,100);
+    b = rand(2,20);
+    op = "÷";
+    correctAnswer = Math.floor(a / b);
+    a = correctAnswer * b;
+  }
+
+  questionEl.textContent = `${a} ${op} ${b} = ?`;
+  resultEl.textContent = "";
+  answerEl.value = "";
+}
+
+function checkAnswer() {
+  if (Number(answerEl.value) === correctAnswer) {
+    resultEl.textContent = "✅ Acertou!";
+  } else {
+    resultEl.textContent = "❌ Errou! Resposta: " + correctAnswer;
+  }
+}
+
+function rand(min,max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+</script>
+
+</body>
+</html>
