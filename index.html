@@ -6,121 +6,34 @@
 <title>JefersonBr.com</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: white;
-}
-
-header {
-  background: #020617;
-  padding: 12px;
-  text-align: center;
-}
-
-header button {
-  margin-top: 8px;
-  padding: 6px 10px;
-  font-size: 14px;
-}
-
-main {
-  padding: 15px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
-  gap: 12px;
-}
-
-.card {
-  background: #1e293b;
-  border-radius: 12px;
-  padding: 10px;
-  text-align: center;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.card:hover {
-  background: #334155;
-}
-
-#player {
-  position: fixed;
-  inset: 0;
-  background: #020617;
-  display: none;
-  flex-direction: column;
-}
-
-#topbar {
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-}
-
-#game {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.box {
-  background: #020617;
-  padding: 15px;
-  border-radius: 12px;
-  max-width: 420px;
-  width: 100%;
-  text-align: center;
-}
-
-.cell {
-  width: 80px;
-  height: 80px;
-  background: #334155;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  margin: 4px;
-}
-
-select, input, button {
-  font-size: 16px;
-  padding: 6px;
-  margin: 5px;
-}
-
-footer {
-  background: #020617;
-  padding: 12px;
-  text-align: center;
-  font-size: 12px;
-  color: #94a3b8;
-}
+body{margin:0;font-family:Arial;background:#0f172a;color:white}
+header{background:#020617;padding:12px;text-align:center}
+button{padding:8px;margin:4px;font-size:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;padding:10px}
+.card{background:#1e293b;padding:10px;border-radius:10px;text-align:center}
+.card:hover{background:#334155}
+#player{position:fixed;inset:0;background:#020617;display:none;flex-direction:column}
+#topbar{display:flex;justify-content:space-between;padding:10px}
+#game{flex:1;display:flex;justify-content:center;align-items:center}
+.box{background:#020617;padding:15px;border-radius:10px;width:100%;max-width:420px;text-align:center}
+.cell{width:90px;height:90px;background:#334155;display:inline-flex;align-items:center;justify-content:center;font-size:40px;margin:5px}
+footer{text-align:center;font-size:12px;color:#94a3b8;padding:10px}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>JefersonBr.com</h1>
-  <p>Mais de 100 jogos</p>
-  <button onclick="fullscreenSite()">🔳 Tela cheia site</button>
+<h1>JefersonBr.com</h1>
+<button onclick="toggleFullscreen()">🔳 Tela cheia site</button>
 </header>
 
-<main>
-  <div class="grid" id="games"></div>
-</main>
+<div class="grid" id="games"></div>
 
 <div id="player">
   <div id="topbar">
     <button onclick="closeGame()">⬅ Voltar</button>
-    <button onclick="fullscreenGame()">🎮 Tela cheia jogo</button>
+    <button onclick="toggleGameFullscreen()">🎮 Tela cheia jogo</button>
   </div>
   <div id="game">
     <div class="box" id="gameBox"></div>
@@ -128,125 +41,153 @@ footer {
 </div>
 
 <footer>
-  Criado por <strong>Jeferson BR Dev</strong><br>
-  © <span id="year"></span> JefersonBrDevGames
+Criado por <b>Jeferson BR Dev</b><br>
+© 2026 JefersonBrDevGames
 </footer>
 
 <script>
-document.getElementById("year").textContent = new Date().getFullYear();
+const games=document.getElementById("games");
+const player=document.getElementById("player");
+const gameBox=document.getElementById("gameBox");
 
-const gamesDiv = document.getElementById("games");
-const player = document.getElementById("player");
-const gameBox = document.getElementById("gameBox");
-
-// ---- TELA CHEIA ----
-function fullscreenSite(){
-  document.documentElement.requestFullscreen();
+/* ===== TELA CHEIA (LIGA / DESLIGA) ===== */
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
 }
-function fullscreenGame(){
-  gameBox.requestFullscreen();
-}
-
-// ---- LISTA DE JOGOS ----
-const gameList = [
-  {id:"math", name:"Matemática"},
-  {id:"velha", name:"Jogo da Velha"},
-  {id:"click", name:"Clicker"},
-  {id:"snake", name:"Snake"}
-];
-
-for(let i=5;i<=100;i++){
-  gameList.push({id:"base"+i, name:"Jogo "+i});
+function toggleGameFullscreen(){
+  if(!document.fullscreenElement){
+    gameBox.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
 }
 
-gameList.forEach(g=>{
+/* ===== CRIA JOGOS 0 A 100 ===== */
+for(let i=0;i<=100;i++){
   const c=document.createElement("div");
   c.className="card";
-  c.textContent=g.name;
-  c.onclick=()=>openGame(g.id);
-  gamesDiv.appendChild(c);
-});
+  c.textContent="Jogo "+i;
+  c.onclick=()=>openGame(i);
+  games.appendChild(c);
+}
 
 function openGame(id){
   player.style.display="flex";
-  if(id==="math") mathGame();
-  else if(id==="velha") velha();
-  else if(id==="click") clicker();
-  else if(id==="snake") snake();
-  else gameBox.innerHTML="<h2>"+id+"</h2><p>Jogo em desenvolvimento</p>";
+  if(id===0) velha();
+  else if(id===1) matematica();
+  else if(id<=20) clicker(id);
+  else if(id<=40) reflexo();
+  else if(id<=60) adivinha();
+  else if(id<=80) contador();
+  else snake();
 }
 
 function closeGame(){
   player.style.display="none";
+  gameBox.innerHTML="";
 }
 
-// ---- MATEMÁTICA ----
-let correct=0;
-function mathGame(){
-  gameBox.innerHTML=`
-    <h2>Matemática</h2>
-    <select id="diff">
-      <option value="easy">Fácil</option>
-      <option value="medium">Médio</option>
-      <option value="hard">Difícil</option>
-      <option value="extreme">Extremo</option>
-    </select>
-    <div id="q">Clique em Nova Conta</div>
-    <input id="ans" type="number">
-    <br>
-    <button onclick="checkMath()">Responder</button>
-    <button onclick="newMath()">Nova Conta</button>
-    <p id="res"></p>
-  `;
-}
-
-function newMath(){
-  const d=document.getElementById("diff").value;
-  let a,b,op;
-  if(d==="easy"){a=r(1,10);b=r(1,10);op="+";correct=a+b;}
-  if(d==="medium"){a=r(10,50);b=r(1,20);op="-";correct=a-b;}
-  if(d==="hard"){a=r(2,12);b=r(2,10);op="×";correct=a*b;}
-  if(d==="extreme"){b=r(2,12);correct=r(2,12);a=correct*b;op="÷";}
-  document.getElementById("q").textContent=`${a} ${op} ${b} = ?`;
-  document.getElementById("res").textContent="";
-}
-
-function checkMath(){
-  document.getElementById("res").textContent =
-  (document.getElementById("ans").value==correct)
-  ?"✅ Acertou!":"❌ Errou! Resposta: "+correct;
-}
-
-// ---- VELHA ----
+/* ===== JOGO DA VELHA (ARRUMADO) ===== */
 function velha(){
-  let t="X",b=Array(9).fill("");
+  let tab=Array(9).fill("");
+  let turno="X";
   gameBox.innerHTML="<h2>Jogo da Velha</h2>";
-  b.forEach((_,i)=>{
+  tab.forEach((_,i)=>{
     const c=document.createElement("div");
     c.className="cell";
-    c.onclick=()=>{if(!b[i]){b[i]=t;c.textContent=t;t=t==="X"?"O":"X";}};
+    c.onclick=()=>{
+      if(tab[i]) return;
+      tab[i]=turno;
+      c.textContent=turno;
+      turno=turno==="X"?"O":"X";
+    };
     gameBox.appendChild(c);
   });
 }
 
-// ---- CLICKER ----
-function clicker(){
+/* ===== MATEMÁTICA ===== */
+let resp=0;
+function matematica(){
+  gameBox.innerHTML=`
+    <h2>Matemática</h2>
+    <select id="d">
+      <option>Fácil</option>
+      <option>Médio</option>
+      <option>Difícil</option>
+      <option>Extremo</option>
+    </select>
+    <p id="q">Clique em Nova</p>
+    <input id="a" type="number">
+    <br>
+    <button onclick="nova()">Nova</button>
+    <button onclick="ver()">Responder</button>
+    <p id="r"></p>
+  `;
+}
+
+function nova(){
+  let d=document.getElementById("d").value;
+  let a,b;
+  if(d==="Fácil"){a=r(1,10);b=r(1,10);resp=a+b;}
+  if(d==="Médio"){a=r(10,50);b=r(1,20);resp=a-b;}
+  if(d==="Difícil"){a=r(2,10);b=r(2,10);resp=a*b;}
+  if(d==="Extremo"){b=r(2,10);resp=r(2,10);a=resp*b;}
+  document.getElementById("q").textContent=`${a} ? ${b}`;
+}
+
+function ver(){
+  document.getElementById("r").textContent =
+    document.getElementById("a").value==resp
+    ? "✅ Acertou!"
+    : "❌ Errou! Resposta: "+resp;
+}
+
+/* ===== JOGOS SIMPLES ===== */
+function clicker(n){
   let s=0;
-  gameBox.innerHTML="<h2>Clicker</h2><p id='s'>0</p>";
-  const btn=document.createElement("button");
-  btn.textContent="CLIQUE";
-  btn.onclick=()=>{s++;document.getElementById("s").textContent=s};
-  gameBox.appendChild(btn);
+  gameBox.innerHTML=`<h2>Clicker ${n}</h2><p id="s">0</p>`;
+  let b=document.createElement("button");
+  b.textContent="CLIQUE";
+  b.onclick=()=>{s++;document.getElementById("s").textContent=s};
+  gameBox.appendChild(b);
 }
 
-// ---- SNAKE ----
+function reflexo(){
+  gameBox.innerHTML="<h2>Toque Rápido</h2>";
+  let b=document.createElement("button");
+  b.textContent="TOQUE";
+  b.onclick=()=>alert("Boa!");
+  gameBox.appendChild(b);
+}
+
+function adivinha(){
+  let n=r(1,10);
+  gameBox.innerHTML=`
+    <h2>Adivinha 1–10</h2>
+    <input id="x">
+    <button onclick="alert(x.value==${n}?'Acertou!':'Errou!')">OK</button>
+  `;
+}
+
+function contador(){
+  let s=0;
+  gameBox.innerHTML="<h2>Tempo</h2><p id='t'>0</p>";
+  let i=setInterval(()=>{
+    let t=document.getElementById("t");
+    if(!t){clearInterval(i);return;}
+    s++;t.textContent=s;
+  },1000);
+}
+
 function snake(){
-  gameBox.innerHTML="<h2>Snake</h2><p>🐍 Versão simples</p>";
+  gameBox.innerHTML="<h2>Snake</h2><p>🐍 versão simples</p>";
 }
 
-function r(min,max){
-  return Math.floor(Math.random()*(max-min+1))+min;
-}
+function r(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 </script>
 
 </body>
