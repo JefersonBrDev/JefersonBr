@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -16,14 +16,13 @@ body {
 header {
   background: #020617;
   padding: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 20px;
+header button {
+  margin-top: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
 }
 
 main {
@@ -32,20 +31,21 @@ main {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
+  gap: 12px;
 }
 
 .card {
   background: #1e293b;
-  border-radius: 14px;
-  padding: 15px;
+  border-radius: 12px;
+  padding: 10px;
   text-align: center;
   cursor: pointer;
+  font-size: 14px;
 }
 
-.card span {
-  font-size: 36px;
+.card:hover {
+  background: #334155;
 }
 
 #player {
@@ -57,9 +57,9 @@ main {
 }
 
 #topbar {
+  padding: 10px;
   display: flex;
   justify-content: space-between;
-  padding: 10px;
 }
 
 #game {
@@ -72,41 +72,34 @@ main {
 .box {
   background: #020617;
   padding: 15px;
-  border-radius: 14px;
+  border-radius: 12px;
   max-width: 420px;
   width: 100%;
   text-align: center;
 }
 
-.board {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 2px;
-}
-
 .cell {
-  aspect-ratio: 1;
+  width: 80px;
+  height: 80px;
   background: #334155;
-  display: flex;
-  justify-content: center;
+  display: inline-flex;
   align-items: center;
-  font-size: 24px;
+  justify-content: center;
+  font-size: 32px;
+  margin: 4px;
 }
 
-.black { background:#1e293b }
-.white { background:#475569 }
-
-button {
-  padding: 8px;
+select, input, button {
+  font-size: 16px;
+  padding: 6px;
   margin: 5px;
-  font-size: 14px;
 }
 
 footer {
   background: #020617;
-  padding: 15px;
+  padding: 12px;
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
   color: #94a3b8;
 }
 </style>
@@ -116,20 +109,18 @@ footer {
 
 <header>
   <h1>JefersonBr.com</h1>
+  <p>Mais de 100 jogos</p>
+  <button onclick="fullscreenSite()">🔳 Tela cheia site</button>
 </header>
 
 <main>
-  <h2>Jogos</h2>
-  <div class="grid">
-    <div class="card" onclick="openGame('velha')"><span>❌</span><br>Jogo da Velha</div>
-    <div class="card" onclick="openGame('dama')"><span>⚫</span><br>Dama</div>
-    <div class="card" onclick="openGame('xadrez')"><span>♟️</span><br>Xadrez</div>
-  </div>
+  <div class="grid" id="games"></div>
 </main>
 
 <div id="player">
   <div id="topbar">
     <button onclick="closeGame()">⬅ Voltar</button>
+    <button onclick="fullscreenGame()">🎮 Tela cheia jogo</button>
   </div>
   <div id="game">
     <div class="box" id="gameBox"></div>
@@ -137,73 +128,124 @@ footer {
 </div>
 
 <footer>
-  <p>
-    Criado por <strong>Jeferson BR Dev</strong><br>
-    © <span id="year"></span> <strong>JefersonBrDevGames</strong>. Todos os direitos reservados.
-  </p>
+  Criado por <strong>Jeferson BR Dev</strong><br>
+  © <span id="year"></span> JefersonBrDevGames
 </footer>
 
 <script>
 document.getElementById("year").textContent = new Date().getFullYear();
 
+const gamesDiv = document.getElementById("games");
 const player = document.getElementById("player");
 const gameBox = document.getElementById("gameBox");
 
-function openGame(t){
+// ---- TELA CHEIA ----
+function fullscreenSite(){
+  document.documentElement.requestFullscreen();
+}
+function fullscreenGame(){
+  gameBox.requestFullscreen();
+}
+
+// ---- LISTA DE JOGOS ----
+const gameList = [
+  {id:"math", name:"Matemática"},
+  {id:"velha", name:"Jogo da Velha"},
+  {id:"click", name:"Clicker"},
+  {id:"snake", name:"Snake"}
+];
+
+for(let i=5;i<=100;i++){
+  gameList.push({id:"base"+i, name:"Jogo "+i});
+}
+
+gameList.forEach(g=>{
+  const c=document.createElement("div");
+  c.className="card";
+  c.textContent=g.name;
+  c.onclick=()=>openGame(g.id);
+  gamesDiv.appendChild(c);
+});
+
+function openGame(id){
   player.style.display="flex";
-  if(t==="velha") velha();
-  if(t==="dama") dama();
-  if(t==="xadrez") xadrez();
+  if(id==="math") mathGame();
+  else if(id==="velha") velha();
+  else if(id==="click") clicker();
+  else if(id==="snake") snake();
+  else gameBox.innerHTML="<h2>"+id+"</h2><p>Jogo em desenvolvimento</p>";
 }
 
 function closeGame(){
   player.style.display="none";
 }
 
+// ---- MATEMÁTICA ----
+let correct=0;
+function mathGame(){
+  gameBox.innerHTML=`
+    <h2>Matemática</h2>
+    <select id="diff">
+      <option value="easy">Fácil</option>
+      <option value="medium">Médio</option>
+      <option value="hard">Difícil</option>
+      <option value="extreme">Extremo</option>
+    </select>
+    <div id="q">Clique em Nova Conta</div>
+    <input id="ans" type="number">
+    <br>
+    <button onclick="checkMath()">Responder</button>
+    <button onclick="newMath()">Nova Conta</button>
+    <p id="res"></p>
+  `;
+}
+
+function newMath(){
+  const d=document.getElementById("diff").value;
+  let a,b,op;
+  if(d==="easy"){a=r(1,10);b=r(1,10);op="+";correct=a+b;}
+  if(d==="medium"){a=r(10,50);b=r(1,20);op="-";correct=a-b;}
+  if(d==="hard"){a=r(2,12);b=r(2,10);op="×";correct=a*b;}
+  if(d==="extreme"){b=r(2,12);correct=r(2,12);a=correct*b;op="÷";}
+  document.getElementById("q").textContent=`${a} ${op} ${b} = ?`;
+  document.getElementById("res").textContent="";
+}
+
+function checkMath(){
+  document.getElementById("res").textContent =
+  (document.getElementById("ans").value==correct)
+  ?"✅ Acertou!":"❌ Errou! Resposta: "+correct;
+}
+
+// ---- VELHA ----
 function velha(){
-  let turn="❌";
-  let board = Array(9).fill("");
-  gameBox.innerHTML="<h2>Jogo da Velha</h2><div id='v'></div>";
-  const v=document.getElementById("v");
-  v.style.display="grid";
-  v.style.gridTemplateColumns="repeat(3,1fr)";
-  board.forEach((_,i)=>{
+  let t="X",b=Array(9).fill("");
+  gameBox.innerHTML="<h2>Jogo da Velha</h2>";
+  b.forEach((_,i)=>{
     const c=document.createElement("div");
     c.className="cell";
-    c.onclick=()=>{
-      if(!board[i]){
-        board[i]=turn;
-        c.textContent=turn;
-        turn = turn==="❌"?"⭕":"❌";
-      }
-    };
-    v.appendChild(c);
+    c.onclick=()=>{if(!b[i]){b[i]=t;c.textContent=t;t=t==="X"?"O":"X";}};
+    gameBox.appendChild(c);
   });
 }
 
-function dama(){
-  gameBox.innerHTML="<h2>Dama (simples)</h2><div class='board'></div>";
-  const b=document.querySelector(".board");
-  for(let i=0;i<64;i++){
-    const c=document.createElement("div");
-    c.className="cell "+((Math.floor(i/8)+i)%2?"black":"white");
-    if(i<24 && c.classList.contains("black")) c.textContent="⚫";
-    if(i>39 && c.classList.contains("black")) c.textContent="⚪";
-    b.appendChild(c);
-  }
+// ---- CLICKER ----
+function clicker(){
+  let s=0;
+  gameBox.innerHTML="<h2>Clicker</h2><p id='s'>0</p>";
+  const btn=document.createElement("button");
+  btn.textContent="CLIQUE";
+  btn.onclick=()=>{s++;document.getElementById("s").textContent=s};
+  gameBox.appendChild(btn);
 }
 
-function xadrez(){
-  const peças=["♜","♞","♝","♛","♚","♝","♞","♜"];
-  gameBox.innerHTML="<h2>Xadrez (visual)</h2><div class='board'></div>";
-  const b=document.querySelector(".board");
-  for(let i=0;i<64;i++){
-    const c=document.createElement("div");
-    c.className="cell "+((Math.floor(i/8)+i)%2?"black":"white");
-    if(i<8) c.textContent=peças[i];
-    if(i>=56) c.textContent=peças[i-56];
-    b.appendChild(c);
-  }
+// ---- SNAKE ----
+function snake(){
+  gameBox.innerHTML="<h2>Snake</h2><p>🐍 Versão simples</p>";
+}
+
+function r(min,max){
+  return Math.floor(Math.random()*(max-min+1))+min;
 }
 </script>
 
